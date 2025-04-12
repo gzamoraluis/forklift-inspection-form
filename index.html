@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barrel Topping Calculator</title>
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --text: #2b2d42;
+            --background: #f8f9fa;
+            --card: #ffffff;
+            --border: #e9ecef;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background);
+            color: var(--text);
+            transition: all 0.3s;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background: var(--card);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .language-toggle {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 16px;
+        }
+
+        .toggle-btn {
+            background: var(--border);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+
+        .toggle-btn:hover {
+            background: #e2e6ea;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        button.calculate {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button.calculate:hover {
+            background: var(--secondary);
+        }
+
+        #result {
+            margin-top: 24px;
+            padding: 16px;
+            background: #f1f8fe;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .result-item {
+            margin-bottom: 12px;
+        }
+
+        .result-item strong {
+            color: var(--primary);
+        }
+
+        .subtraction-steps {
+            margin-top: 16px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            font-family: monospace;
+        }
+
+        .batch-tag {
+            display: inline-block;
+            padding: 2px 6px;
+            background-color: var(--primary);
+            color: white;
+            border-radius: 4px;
+            font-size: 0.8em;
+            margin-left: 8px;
+        }
+
+        .so2-result {
+            background-color: #e8f5e9;
+            padding: 8px;
+            border-radius: 4px;
+            margin-top: 8px;
+            border-left: 3px solid #2e7d32;
+        }
+
+        .batch-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .batch-count {
+            flex: 1;
+        }
+
+        .batch-type {
+            flex: 2;
+        }
+
+        .batch-tag-input {
+            flex: 2;
+        }
+
+        .batch-ppm {
+            flex: 1;
+        }
+
+        .batch-header {
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .batch-row {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .remove-btn {
+            background: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 2px 8px;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                margin: 10px;
+                padding: 15px;
+            }
+            
+            .batch-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="language-toggle">
+            <button class="toggle-btn" id="languageToggle">
+                <span id="languageText">Español</span> 🌐
+            </button>
+        </div>
+
+        <h1 id="appTitle">Barrel Topping Calculator</h1>
+
+        <div class="form-group">
+            <label for="gallons" id="gallonsLabel">Gallons used for topping:</label>
+            <input type="number" id="gallons" step="0.01" min="0" placeholder="e.g., 3">
+        </div>
+
+        <div id="batchInputs">
+            <div class="batch-header">
+                <span id="batchHeaderText">Barrel batches:</span>
+                <button type="button" onclick="addBatch()" style="float: right; background: var(--primary); color: white; border: none; border-radius: 4px; padding: 2px 8px; cursor: pointer;">+</button>
+            </div>
+            <div class="batch-row" id="batchRow1">
+                <div class="batch-container">
+                    <div class="batch-count">
+                        <label>Barrel count</label>
+                        <input type="number" class="barrel-count" min="1" value="1" placeholder="Number">
+                    </div>
+                    <div class="batch-type">
+                        <label>Barrel type</label>
+                        <select class="barrel-type">
+                            <option value="59">Standard Barrel (59 gal)</option>
+                            <option value="132">Puncheon (132 gal)</option>
+                        </select>
+                    </div>
+                    <div class="batch-tag-input">
+                        <label>Tag (optional)</label>
+                        <input type="text" class="batch-tag" placeholder="e.g., Merlot">
+                    </div>
+                    <div class="batch-ppm">
+                        <label>SO₂ PPM</label>
+                        <input type="number" class="batch-ppm" min="0" placeholder="e.g., 30">
+                    </div>
+                </div>
+                <button type="button" onclick="removeBatch('batchRow1')" class="remove-btn">- Remove</button>
+            </div>
+        </div>
+
+        <button class="calculate" onclick="calculate()" id="calculateBtn">Calculate</button>
+
+        <div id="result" style="display: none;">
+            <div class="result-item">
+                <strong id="totalBarrelsText">Total barrels:</strong> <span id="totalBarrels"></span>
+            </div>
+            <div class="result-item">
+                <strong id="perBarrelText">Gallons per barrel (unrounded):</strong> <span id="perBarrel"></span>
+            </div>
+            <h3 id="distributionTitle">Distribution per batch:</h3>
+            <div id="batchResults"></div>
+            <div class="subtraction-steps">
+                <h4 id="subtractionTitle">Subtraction Steps:</h4>
+                <div id="subtractionSteps"></div>
+            </div>
+            <div class="subtraction-steps">
+                <h4 id="so2Title">SO₂ Addition:</h4>
+                <div id="so2Results"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Bilingual texts
+        const texts = {
+            en: {
+                title: "Barrel Topping Calculator",
+                gallonsLabel: "Gallons used for topping:",
+                batchHeaderText: "Barrel batches:",
+                calculateBtn: "Calculate",
+                totalBarrelsText: "Total barrels:",
+                perBarrelText: "Gallons per barrel (unrounded):",
+                so2PerBarrelText: "SO₂ per barrel:",
+                distributionTitle: "Distribution per batch:",
+                subtractionTitle: "Subtraction Steps:",
+                so2Title: "SO₂ Addition:",
+                toggleLanguage: "Español",
+                remaining: "remaining",
+                initialTotal: "Initial total:",
+                so2TotalText: "Total SO₂ for batch:",
+                batchTagText: "Batch",
+                barrelTypeStandard: "Standard Barrel (59 gal)",
+                barrelTypePuncheon: "Puncheon (132 gal)",
+                so2PPMText: "SO₂ PPM",
+                removeText: "- Remove",
+                so2Instructions: "Add the following amounts of SO₂ to each batch:"
+            },
+            es: {
+                title: "Calculadora de Topping para Barriles",
+                gallonsLabel: "Galones usados para topping:",
+                batchHeaderText: "Lotes de barriles:",
+                calculateBtn: "Calcular",
+                totalBarrelsText: "Total de barriles:",
+                perBarrelText: "Galones por barril (sin redondear):",
+                so2PerBarrelText: "SO₂ por barril:",
+                distributionTitle: "Distribución por lote:",
+                subtractionTitle: "Pasos de resta:",
+                so2Title: "Adición de SO₂:",
+                toggleLanguage: "English",
+                remaining: "restantes",
+                initialTotal: "Total inicial:",
+                so2TotalText: "Total de SO₂ para el lote:",
+                batchTagText: "Lote",
+                barrelTypeStandard: "Barrica Estándar (59 gal)",
+                barrelTypePuncheon: "Puncheon (132 gal)",
+                so2PPMText: "SO₂ PPM",
+                removeText: "- Eliminar",
+                so2Instructions: "Agregue las siguientes cantidades de SO₂ a cada lote:"
+            }
+        };
+
+        let currentLanguage = 'en';
+        let batchCounter = 1;
+
+        // Toggle language
+        document.getElementById('languageToggle').addEventListener('click', function() {
+            currentLanguage = currentLanguage === 'en' ? 'es' : 'en';
+            updateLanguage();
+        });
+
+        function updateLanguage() {
+            document.getElementById('appTitle').textContent = texts[currentLanguage].title;
+            document.getElementById('gallonsLabel').textContent = texts[currentLanguage].gallonsLabel;
+            document.getElementById('batchHeaderText').textContent = texts[currentLanguage].batchHeaderText;
+            document.getElementById('calculateBtn').textContent = texts[currentLanguage].calculateBtn;
+            document.getElementById('languageText').textContent = texts[currentLanguage].toggleLanguage;
+
+            // Update barrel type options
+            document.querySelectorAll('.barrel-type').forEach(select => {
+                select.innerHTML = `
+                    <option value="59">${texts[currentLanguage].barrelTypeStandard}</option>
+                    <option value="132">${texts[currentLanguage].barrelTypePuncheon}</option>
+                `;
+            });
+
+            // Update labels
+            document.querySelectorAll('.batch-container').forEach(container => {
+                container.querySelector('.batch-count label').textContent = 'Barrel count';
+                container.querySelector('.batch-type label').textContent = 'Barrel type';
+                container.querySelector('.batch-tag-input label').textContent = 'Tag (optional)';
+                container.querySelector('.batch-ppm label').textContent = texts[currentLanguage].so2PPMText;
+            });
+
+            document.querySelectorAll('.remove-btn').forEach(btn => {
+                btn.textContent = texts[currentLanguage].removeText;
+            });
+
+            // Update results if displayed
+            if (document.getElementById('result').style.display !== 'none') {
+                document.getElementById('totalBarrelsText').textContent = texts[currentLanguage].totalBarrelsText;
+                document.getElementById('perBarrelText').textContent = texts[currentLanguage].perBarrelText;
+                document.getElementById('distributionTitle').textContent = texts[currentLanguage].distributionTitle;
+                document.getElementById('subtractionTitle').textContent = texts[currentLanguage].subtractionTitle;
+                document.getElementById('so2Title').textContent = texts[currentLanguage].so2Title;
+            }
+        }
+
+        function addBatch() {
+            batchCounter++;
+            const newBatch = document.createElement('div');
+            newBatch.className = 'batch-row';
+            newBatch.id = 'batchRow' + batchCounter;
+            newBatch.innerHTML = `
+                <div class="batch-container">
+                    <div class="batch-count">
+                        <label>Barrel count</label>
+                        <input type="number" class="barrel-count" min="1" value="1" placeholder="Number">
+                    </div>
+                    <div class="batch-type">
+                        <label>Barrel type</label>
+                        <select class="barrel-type">
+                            <option value="59">${texts[currentLanguage].barrelTypeStandard}</option>
+                            <option value="132">${texts[currentLanguage].barrelTypePuncheon}</option>
+                        </select>
+                    </div>
+                    <div class="batch-tag-input">
+                        <label>Tag (optional)</label>
+                        <input type="text" class="batch-tag" placeholder="e.g., ${currentLanguage === 'en' ? 'Merlot' : 'Merlot'}">
+                    </div>
+                    <div class="batch-ppm">
+                        <label>${texts[currentLanguage].so2PPMText}</label>
+                        <input type="number" class="batch-ppm" min="0" placeholder="e.g., 30">
+                    </div>
+                </div>
+                <button type="button" onclick="removeBatch('batchRow${batchCounter}')" class="remove-btn">${texts[currentLanguage].removeText}</button>
+            `;
+            document.getElementById('batchInputs').appendChild(newBatch);
+        }
+
+        function removeBatch(id) {
+            const batchToRemove = document.getElementById(id);
+            if (batchToRemove && document.querySelectorAll('.batch-row').length > 1) {
+                batchToRemove.remove();
+            } else {
+                alert(currentLanguage === 'en' ? "You need at least one batch!" : "¡Necesitas al menos un lote!");
+            }
+        }
+
+        function calculate() {
+            const gallons = parseFloat(document.getElementById("gallons").value);
+            
+            // Get all batches data
+            const batches = [];
+            document.querySelectorAll('.batch-row').forEach(row => {
+                const count = parseInt(row.querySelector('.barrel-count').value) || 0;
+                const type = parseInt(row.querySelector('.barrel-type').value) || 59;
+                const tag = row.querySelector('.batch-tag').value.trim();
+                const ppm = parseFloat(row.querySelector('.batch-ppm').value) || 0;
+                
+                if (count > 0) {
+                    batches.push({
+                        count: count,
+                        type: type,
+                        tag: tag,
+                        ppm: ppm
+                    });
+                }
+            });
+
+            const totalBarrels = batches.reduce((sum, batch) => sum + batch.count, 0);
+
+            if (!gallons || totalBarrels === 0 || isNaN(gallons)) {
+                alert(currentLanguage === 'en' ? "Please enter valid data!" : "¡Ingrese datos válidos!");
+                return;
+            }
+
+            const gallonsPerBarrel = gallons / totalBarrels;
+            document.getElementById("totalBarrels").textContent = totalBarrels;
+            document.getElementById("perBarrel").textContent = gallonsPerBarrel.toFixed(4);
+
+            let batchResultsHTML = '';
+            let subtractionStepsHTML = '';
+            let so2ResultsHTML = `<p>${texts[currentLanguage].so2Instructions}</p>`;
+            let remainingGallons = gallons;
+            let roundedGallons = [];
+            let totalRounded = 0;
+
+            // Calculate rounded values for each batch
+            batches.forEach((batch, index) => {
+                const batchGallons = batch.count * gallonsPerBarrel;
+                const rounded = Math.round(batchGallons * 4) / 4; // Round to nearest 0.25
+                roundedGallons.push(rounded);
+                totalRounded += rounded;
+            });
+
+            // Adjust difference in last batch to make sum exact
+            const difference = gallons - totalRounded;
+            if (difference !== 0 && roundedGallons.length > 0) {
+                roundedGallons[roundedGallons.length - 1] += difference;
+            }
+
+            // Show results and subtraction steps
+            subtractionStepsHTML += `<p>${texts[currentLanguage].initialTotal} ${remainingGallons.toFixed(2)}G</p>`;
+
+            batches.forEach((batch, index) => {
+                const rounded = roundedGallons[index];
+                const batchTag = batch.tag || '';
+                const barrelTypeText = batch.type === 59 ? texts[currentLanguage].barrelTypeStandard : texts[currentLanguage].barrelTypePuncheon;
+                
+                // Calculate SO2 for this batch (barrel type gallons * ppm * 0.3785 / 6)
+                const so2PerBarrel = batch.ppm > 0 ? Math.round(batch.type * batch.ppm * 0.3785 / 6) : 0;
+                const totalSO2 = batch.ppm > 0 ? Math.round(so2PerBarrel * batch.count) : 0;
+                
+                batchResultsHTML += `
+                    <div class="result-item">
+                        <strong>${texts[currentLanguage].batchTagText} ${index + 1} (${batch.count} ${barrelTypeText})${batchTag ? `<span class="batch-tag">${batchTag}</span>` : ''}:</strong> 
+                        ${rounded.toFixed(2)}G
+                    </div>
+                `;
+
+                subtractionStepsHTML += `
+                    <p>${remainingGallons.toFixed(2)}G - ${rounded.toFixed(2)}G (${texts[currentLanguage].batchTagText} ${index + 1}) = ${(remainingGallons - rounded).toFixed(2)}G ${texts[currentLanguage].remaining}</p>
+                `;
+                
+                if (batch.ppm > 0) {
+                    so2ResultsHTML += `
+                        <p><strong>${texts[currentLanguage].batchTagText} ${index + 1}${batchTag ? ` (${batchTag})` : ''}:</strong> 
+                        ${totalSO2} mL (${so2PerBarrel} mL ${currentLanguage === 'en' ? 'per barrel' : 'por barril'} × ${batch.count} ${currentLanguage === 'en' ? 'barrels' : 'barriles'})</p>
+                    `;
+                }
+                
+                remainingGallons -= rounded;
+            });
+
+            document.getElementById("batchResults").innerHTML = batchResultsHTML;
+            document.getElementById("subtractionSteps").innerHTML = subtractionStepsHTML;
+            document.getElementById("so2Results").innerHTML = so2ResultsHTML;
+            document.getElementById("result").style.display = 'block';
+        }
+    </script>
+</body>
+</html>
