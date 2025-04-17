@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forklift Operator Daily Pre-operation Checklist</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-container {
+            background-color: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-section {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .form-section h2 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        select, input[type="text"], input[type="number"], textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .checkbox-group input {
+            margin-right: 10px;
+        }
+        .checkbox-group label.good {
+            color: #27ae60;
+        }
+        .checkbox-group label.bad {
+            color: #e74c3c;
+        }
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .submit-btn {
+            background-color: #27ae60;
+            color: white;
+        }
+        .reset-btn {
+            background-color: #e74c3c;
+            color: white;
+        }
+        .export-btn {
+            background-color: #3498db;
+            color: white;
+        }
+        .language-toggle {
+            background-color: #f1c40f;
+            color: black;
+            margin-bottom: 20px;
+        }
+        .footer-note {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            font-style: italic;
+        }
+        .final-note {
+            margin-top: 10px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .summary-section {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            display: none;
+        }
+        .summary-item {
+            margin-bottom: 10px;
+        }
+        .status-good {
+            color: #27ae60;
+            font-weight: bold;
+        }
+        .status-bad {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <button class="language-toggle" onclick="toggleLanguage()">Español/Spanish</button>
+
+    <div class="header">
+        <h1 id="form-title">Forklift Operator Daily Pre-operation Checklist</h1>
+        <h2 id="location">Location: STONESTREET</h2>
+    </div>
+
+    <div class="form-container">
+        <div class="form-section">
+            <h2 id="equipment-header">Equipment Information</h2>
+            <div class="form-group">
+                <label for="forklift-type" id="forklift-type-label">Forklift Type</label>
+                <select id="forklift-type" onchange="toggleFuelSection()">
+                    <option value="">Select forklift type</option>
+                    <option value="electric">Electric</option>
+                    <option value="combustion">Internal Combustion (5, 6 only)</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="forklift-id" id="forklift-id-label">Forklift ID</label>
+                <select id="forklift-id">
+                    <option value="">Select forklift</option>
+                    <option value="FL-1">Forklift 1</option>
+                    <option value="FL-2">Forklift 2</option>
+                    <option value="FL-3">Forklift 3</option>
+                    <option value="FL-4">Forklift 4</option>
+                    <option value="FL-5">Forklift 5</option>
+                    <option value="FL-6">Forklift 6</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="shift" id="shift-label">Shift</label>
+                <select id="shift">
+                    <option value="">Select shift</option>
+                    <option value="AM">AM Shift</option>
+                    <option value="PM">PM Shift</option>
+                </select>
+            </div>
+            
+            <div class="form-group" id="combustion-section" style="display: none;">
+                <label for="fuel-level" id="fuel-level-label">Fuel Level</label>
+                <select id="fuel-level">
+                    <option value="">Select fuel level</option>
+                    <option value="full">Full</option>
+                    <option value="3/4">3/4</option>
+                    <option value="1/2">1/2</option>
+                    <option value="1/4">1/4</option>
+                    <option value="empty">Empty</option>
+                </select>
+            </div>
+            
+            <div class="form-group" id="electric-section" style="display: none;">
+                <label for="battery-level" id="battery-level-label">Battery Charge Level</label>
+                <input type="number" id="battery-level" min="0" max="100" placeholder="Enter percentage">
+            </div>
+            
+            <div class="form-group">
+                <label for="operator-initials" id="initials-label">Daily Initials</label>
+                <input type="text" id="operator-initials" placeholder="Enter operator initials">
+            </div>
+            
+            <div class="form-group">
+                <label for="hours-meter" id="hours-label">Current Hours/Meter Reading</label>
+                <input type="number" id="hours-meter" step="0.1" placeholder="Enter hours/meter reading">
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h2 id="safety-header">Safety Devices</h2>
+            
+            <div class="form-group">
+                <label id="horn-label">Horn</label>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="horn-working" name="horn" value="good">
+                    <label for="horn-working" class="good">Working properly</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="horn-not-working" name="horn" value="bad">
+                    <label for="horn-not-working" class="bad">Not working</label>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label id="front-lights-label">Front Lights</label>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="front-lights-working" name="front-lights" value="good">
+                    <label for="front-lights-working" class="good">Working properly</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="front-lights-not-working" name="front-lights" value="bad">
+                    <label for="front-lights-not-working" class="bad">Not working</label>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label id="back-lights-label">Backup Lights</label>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="back-lights-working" name="back-lights" value="good">
+                    <label for="back-lights-working" class="good">Working properly</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="back-lights-not-working" name="back-lights" value="bad">
+                    <label for="back-lights-not-working" class="bad">Not working</label>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label id="backup-alarm-label">Backup Alarm</label>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="backup-alarm-working" name="backup-alarm" value="good">
+                    <label for="backup-alarm-working" class="good">Working properly</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="backup-alarm-not-working" name="backup-alarm" value="bad">
+                    <label for="backup-alarm-not-working" class="bad">Not working</label>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label id="seatbelt-label">Seatbelt</label>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="seatbelt-good" name="seatbelt" value="good">
+                    <label for="seatbelt-good" class="good">Good condition</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="seatbelt-bad" name="seatbelt" value="bad">
+                    <label for="seatbelt-bad" class="bad">Needs attention</label>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label id="fire-extinguisher-label">Fire Extinguisher</label>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="fire-extinguisher-good" name="fire-extinguisher" value="good">
+                    <label for="fire-extinguisher-good" class="good">Present and charged</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="fire-extinguisher-bad" name="fire-extinguisher" value="bad">
+                    <label for="fire-extinguisher-bad" class="bad">Missing or needs service</label>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label id="tires-label">Tires Condition</label>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="tires-good" name="tires" value="good">
+                    <label for="tires-good" class="good">Good condition (no cracks, proper inflation)</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="tires-bad" name="tires" value="bad">
+                    <label for="tires-bad" class="bad">Damaged/worn (needs repair)</label>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label id="forks-label">Forks Condition</label>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="forks-good" name="forks" value="good">
+                    <label for="forks-good" class="good">Good condition (no cracks, straight)</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="forks-bad" name="forks" value="bad">
+                    <label for="forks-bad" class="bad">Damaged/bent (needs repair)</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h2 id="operational-header">Operational Checks</h2>
+            
+            <div class="form-group">
+                <label id="steering-label">Steering</label>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="steering-good" name="steering" value="good">
+                    <label for="steering-good" class="good">Operates smoothly, no excessive play</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="steering-bad" name="steering" value="bad">
+                    <label for="steering-bad" class="bad">Hard to steer or excessive play</label>
+                </div>
+            </div>
+            <div class="form-group">
+    <label>H2O Checked on 
+        <select id="h2o-day">
+            <option value="Monday">Monday</option>
+            <option value="Tuesday">Tuesday</option>
+            <option value="Wednesday">Wednesday</option>
+            <option value="Thursday">Thursday</option>
+            <option value="Friday">Friday</option>
+        </select>
+      </label>
+      <div class="checkbox-group">
+        <input type="checkbox" id="h2o-checked">
+        <label for="h2o-checked">H2O Checked</label>
+      </div>
+       </div>
+            
+            <div class="form-group">
+                <label id="foot-brakes-label">Foot Brakes</label>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="foot-brakes-good" name="foot-brakes" value="good">
+                    <label for="foot-brakes-good" class="good">Hold properly, no dragging</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="foot-brakes-bad" name="foot-brakes" value="bad">
+                    <label for="foot-brakes-bad" class="bad">Don't hold properly or drag</label>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label id="emergency-brakes-label">Emergency Brakes</label>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="emergency-brakes-good" name="emergency-brakes" value="good">
+                    <label for="emergency-brakes-good" class="good">Hold properly</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="emergency-brakes-bad" name="emergency-brakes" value="bad">
+                    <label for="emergency-brakes-bad" class="bad">Don't hold properly</label>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label id="hoisting-label">Hoisting Mechanism (Lift & Tilt)</label>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="hoisting-good" name="hoisting" value="good">
+                    <label for="hoisting-good" class="good">Operates smoothly at all heights</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="hoisting-bad" name="hoisting" value="bad">
+                    <label for="hoisting-bad" class="bad">Jerky operation or won't lift/tilt</label>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label id="leaks-label">Oil or Other Fluid Leaks</label>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="no-leaks" name="leaks" value="good">
+                    <label for="no-leaks" class="good">No leaks detected</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="leaks-present" name="leaks" value="bad">
+                    <label for="leaks-present" class="bad">Leaks detected</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h2 id="notes-header">Additional Notes</h2>
+            <div class="form-group">
+                <label for="notes" id="notes-label">Any additional observations or comments</label>
+                <textarea id="notes" rows="4" placeholder="Enter any additional notes here..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label id="status-label">Overall Inspection Status</label>
+                <div class="checkbox-group">
+                    <input type="radio" id="status-pass" name="status" value="pass">
+                    <label for="status-pass" class="good">Pass - Forklift is safe to operate</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="radio" id="status-fail" name="status" value="fail">
+                    <label for="status-fail" class="bad">Fail - Do not operate, tag out and report</label>
+                </div>
+            </div>
+        </div>
+
+        
+        <div class="summary-section" id="summary-section">
+            <h2 id="summary-title">Inspection Summary</h2>
+            <div id="summary-content"></div>
+        </div>
+
+        <div class="footer-note" id="notification-note">
+            You must notify your supervisor immediately if you indicated that anything was not in good working order.
+        </div>
+
+        <div class="final-note" id="completion-note">
+            Forklift Operators are required to complete this form daily.
+        </div>
+
+        <div class="button-group">
+            <button class="reset-btn" id="reset-btn" onclick="resetForm()">Reset Form</button>
+            <button class="submit-btn" id="submit-btn" onclick="submitInspection()">Submit Inspection</button>
+        </div>
+
+        <div class="button-group">
+            <button class="export-btn" id="csv-btn" onclick="exportToCSV()">Export to CSV</button>
+            <button class="export-btn" id="pdf-btn" onclick="generatePDF()">Generate PDF Report</button>
+        </div>
+    </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>    <script>
+         // Language toggle
+        let currentLanguage = 'english';
+        
+        const translations = {
+            english: {
+                'form-title': 'Forklift Operator Daily Pre-operation Checklist',
+                'location': 'Location: STONESTREET',
+                'equipment-header': 'Equipment Information',
+                'forklift-type-label': 'Forklift Type',
+                'forklift-id-label': 'Forklift ID',
+                'shift-label': 'Shift',
+                'fuel-level-label': 'Fuel Level',
+                'battery-level-label': 'Battery Charge Level',
+                'initials-label': 'Daily Initials',
+                'hours-label': 'Current Hours/Meter Reading',
+                'safety-header': 'Safety Devices',
+                'horn-label': 'Horn',
+                'front-lights-label': 'Front Lights',
+                'back-lights-label': 'Backup Lights',
+                'backup-alarm-label': 'Backup Alarm',
+                'seatbelt-label': 'Seatbelt',
+                'fire-extinguisher-label': 'Fire Extinguisher',
+                'tires-label': 'Tires Condition',
+                'forks-label': 'Forks Condition',
+                'operational-header': 'Operational Checks',
+                'steering-label': 'Steering',
+                'foot-brakes-label': 'Foot Brakes',
+                'emergency-brakes-label': 'Emergency Brakes',
+                'hoisting-label': 'Hoisting Mechanism (Lift & Tilt)',
+                'leaks-label': 'Oil or Other Fluid Leaks',
+                'notes-header': 'Additional Notes',
+                'notes-label': 'Any additional observations or comments',
+                'status-label': 'Overall Inspection Status',
+                'notification-note': 'You must notify your supervisor immediately if you indicated that anything was not in good working order.',
+                'completion-note': 'Forklift Operators are required to complete this form daily.',
+                'reset-btn': 'Reset Form',
+                'submit-btn': 'Submit Inspection',
+                'csv-btn': 'Export to CSV',
+                'pdf-btn': 'Generate PDF Report'
+            },
+            spanish: {
+                'form-title': 'Lista de Verificación Diaria Pre-operación para Operadores de Montacargas',
+                'location': 'Ubicación: STONESTREET',
+                'equipment-header': 'Información del Equipo',
+                'forklift-type-label': 'Tipo de Montacargas',
+                'forklift-id-label': 'ID del Montacargas',
+                'shift-label': 'Turno',
+                'fuel-level-label': 'Nivel de Combustible',
+                'battery-level-label': 'Nivel de Batería',
+                'initials-label': 'Iniciales del Operador',
+                'hours-label': 'Horas/Lectura del Medidor Actual',
+                'safety-header': 'Dispositivos de Seguridad',
+                'horn-label': 'Bocina',
+                'front-lights-label': 'Luces Delanteras',
+                'back-lights-label': 'Luces de Reversa',
+                'backup-alarm-label': 'Alarma de Reversa',
+                'seatbelt-label': 'Cinturón de Seguridad',
+                'fire-extinguisher-label': 'Extintor de Incendios',
+                'tires-label': 'Condición de las Llantas',
+                'forks-label': 'Condición de las Horquillas',
+                'operational-header': 'Chequeos Operacionales',
+                'steering-label': 'Dirección',
+                'foot-brakes-label': 'Frenos de Pie',
+                'emergency-brakes-label': 'Frenos de Emergencia',
+                'hoisting-label': 'Mecanismo de Elevación (Levante e Inclinación)',
+                'leaks-label': 'Fugas de Aceite u Otros Fluidos',
+                'notes-header': 'Notas Adicionales',
+                'notes-label': 'Cualquier observación o comentario adicional',
+                'status-label': 'Estado General de la Inspección',
+                'notification-note': 'Debe notificar a su supervisor inmediatamente si indicó que algo no estaba en buen estado de funcionamiento.',
+                'completion-note': 'Los operadores de montacargas deben completar este formulario diariamente.',
+                'reset-btn': 'Reiniciar Formulario',
+                'submit-btn': 'Enviar Inspección',
+                'csv-btn': 'Exportar a CSV',
+                'pdf-btn': 'Generar Reporte PDF'
+            }
+        };
+
+        function toggleLanguage() {
+            currentLanguage = currentLanguage === 'english' ? 'spanish' : 'english';
+            document.querySelector('.language-toggle').textContent = 
+                currentLanguage === 'english' ? 'Español/Spanish' : 'English/Inglés';
+            
+            // Update all text elements
+            for (const [id, text] of Object.entries(translations[currentLanguage])) {
+                const element = document.getElementById(id) || document.querySelector(`[id="${id}"]`);
+                if (element) {
+                    element.textContent = text;
+                }
+            }
+            
+            // Update placeholders
+            document.getElementById('operator-initials').placeholder = 
+                currentLanguage === 'english' ? 'Enter operator initials' : 'Ingrese iniciales del operador';
+            document.getElementById('hours-meter').placeholder = 
+                currentLanguage === 'english' ? 'Enter hours/meter reading' : 'Ingrese horas/lectura del medidor';
+            document.getElementById('battery-level').placeholder = 
+                currentLanguage === 'english' ? 'Enter percentage' : 'Ingrese porcentaje';
+            document.getElementById('notes').placeholder = 
+                currentLanguage === 'english' ? 'Enter any additional notes here...' : 'Ingrese notas adicionales aquí...';
+        }
+
+        // Toggle between electric and combustion sections
+        function toggleFuelSection() {
+            const forkliftType = document.getElementById('forklift-type').value;
+            
+            if (forkliftType === 'electric') {
+                document.getElementById('electric-section').style.display = 'block';
+                document.getElementById('combustion-section').style.display = 'none';
+            } else if (forkliftType === 'combustion') {
+                document.getElementById('electric-section').style.display = 'none';
+                document.getElementById('combustion-section').style.display = 'block';
+            } else {
+                document.getElementById('electric-section').style.display = 'none';
+                document.getElementById('combustion-section').style.display = 'none';
+            }
+        }
+
+
+        // Submit inspection - modified to show summary
+        function submitInspection() {
+            // Validate required fields
+            const requiredFields = ['forklift-type', 'forklift-id', 'shift', 'operator-initials', 'hours-meter'];
+            let isValid = true;
+            
+            requiredFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (!field.value) {
+                    isValid = false;
+                    field.style.borderColor = '#e74c3c';
+                } else {
+                    field.style.borderColor = '';
+                }
+            });
+            
+            if (!isValid) {
+                alert(currentLanguage === 'english' 
+                    ? 'Please fill in all required fields!' 
+                    : '¡Por favor complete todos los campos requeridos!');
+                return;
+            }
+            
+            // Generate summary
+            generateSummary();
+            
+            // Show success message
+            alert(currentLanguage === 'english' 
+                ? 'Inspection submitted successfully!' 
+                : '¡Inspección enviada con éxito!');
+        }
+
+        // Generate summary function
+       function generateSummary() {
+    const summaryContent = document.getElementById('summary-content');
+    const summarySection = document.getElementById('summary-section');
+    
+    // Clear previous summary
+    summaryContent.innerHTML = '';
+    
+    // Helper function to get checkbox status
+    const getCheckboxStatus = (goodId, badId) => {
+        const goodChecked = document.getElementById(goodId)?.checked;
+        const badChecked = document.getElementById(badId)?.checked;
+        
+        if (goodChecked) return { text: 'Good', className: 'status-good' };
+        if (badChecked) return { text: 'Needs attention', className: 'status-bad' };
+        return { text: 'Not checked', className: '' };
+    };
+
+    // Helper function to add summary items
+    const addSummaryItem = (label, statusObj) => {
+        const div = document.createElement('div');
+        div.className = 'summary-item';
+        div.innerHTML = `<strong>${label}:</strong> <span class="${statusObj.className}">${statusObj.text}</span>`;
+        summaryContent.appendChild(div);
+    };
+
+    // Add basic info (non-checkbox items)
+    const addSimpleItem = (label, value) => {
+        const div = document.createElement('div');
+        div.className = 'summary-item';
+        div.innerHTML = `<strong>${label}:</strong> ${value}`;
+        summaryContent.appendChild(div);
+    };
+
+    // Add basic info
+    addSimpleItem('Forklift ID', document.getElementById('forklift-id').value);
+    addSimpleItem('Type', document.getElementById('forklift-type').value === 'electric' ? 'Electric' : 'Internal Combustion');
+    addSimpleItem('Shift', document.getElementById('shift').value);
+    addSimpleItem('Initials', document.getElementById('operator-initials').value);
+    addSimpleItem('Hours/Meter', document.getElementById('hours-meter').value);
+    
+    // Add fuel/battery info
+    if (document.getElementById('forklift-type').value === 'electric') {
+        addSimpleItem('Battery Level', document.getElementById('battery-level').value + '%');
+    } else {
+        addSimpleItem('Fuel Level', document.getElementById('fuel-level').value);
+    }
+    
+    // Add safety devices
+    addSummaryItem('Horn', getCheckboxStatus('horn-working', 'horn-not-working'));
+    addSummaryItem('Front Lights', getCheckboxStatus('front-lights-working', 'front-lights-not-working'));
+    addSummaryItem('Backup Lights', getCheckboxStatus('back-lights-working', 'back-lights-not-working'));
+    addSummaryItem('Backup Alarm', getCheckboxStatus('backup-alarm-working', 'backup-alarm-not-working'));
+    addSummaryItem('Seatbelt', getCheckboxStatus('seatbelt-good', 'seatbelt-bad'));
+    addSummaryItem('Fire Extinguisher', getCheckboxStatus('fire-extinguisher-good', 'fire-extinguisher-bad'));
+    addSummaryItem('Tires', getCheckboxStatus('tires-good', 'tires-bad'));
+    addSummaryItem('Forks', getCheckboxStatus('forks-good', 'forks-bad'));
+    
+    // Add operational checks
+    addSimpleItem('H2O Check', 
+    document.getElementById('h2o-checked').checked 
+        ? `Checked on ${document.getElementById('h2o-day').value}`
+        : 'Not checked'
+);
+    addSummaryItem('Steering', getCheckboxStatus('steering-good', 'steering-bad'));
+    addSummaryItem('Foot Brakes', getCheckboxStatus('foot-brakes-good', 'foot-brakes-bad'));
+    addSummaryItem('Emergency Brakes', getCheckboxStatus('emergency-brakes-good', 'emergency-brakes-bad'));
+    addSummaryItem('Hoisting Mechanism', getCheckboxStatus('hoisting-good', 'hoisting-bad'));
+    addSummaryItem('Fluid Leaks', getCheckboxStatus('no-leaks', 'leaks-present'));
+    
+    // Add notes
+    const notes = document.getElementById('notes').value;
+    if (notes) {
+        addSimpleItem('Notes', notes);
+    }
+    
+    // Add overall status
+    const status = document.querySelector('input[name="status"]:checked')?.value;
+    const statusDiv = document.createElement('div');
+    statusDiv.className = 'summary-item';
+    statusDiv.innerHTML = `<strong>Overall Status:</strong> <span class="${status === 'pass' ? 'status-good' : 'status-bad'}">${
+        status === 'pass' ? 'PASS - Safe to operate' : 'FAIL - Do not operate'
+    }</span>`;
+    summaryContent.appendChild(statusDiv);
+    
+    // Show summary section
+    summarySection.style.display = 'block';
+}
+     function exportToCSV() {
+    // Get current date and time
+    const now = new Date();
+    const timestamp = now.toLocaleString();
+    
+    // Get all field values
+    const values = [
+        // Timestamp
+        timestamp,
+        
+        // Basic information
+        document.getElementById('forklift-type').value,
+        document.getElementById('forklift-id').value,
+        document.getElementById('shift').value,
+        document.getElementById('operator-initials').value,
+        document.getElementById('hours-meter').value,
+        
+        // Fuel/Battery
+        document.getElementById('forklift-type').value === 'combustion' 
+            ? document.getElementById('fuel-level').value 
+            : 'N/A',
+        document.getElementById('forklift-type').value === 'electric' 
+            ? document.getElementById('battery-level').value 
+            : 'N/A',
+        
+        // Safety devices
+        document.getElementById('horn-working').checked ? 'Good' : 'Needs attention',
+        document.getElementById('front-lights-working').checked ? 'Good' : 'Needs attention',
+        document.getElementById('back-lights-working').checked ? 'Good' : 'Needs attention',
+        document.getElementById('backup-alarm-working').checked ? 'Good' : 'Needs attention',
+        document.getElementById('seatbelt-good').checked ? 'Good' : 'Needs attention',
+        document.getElementById('fire-extinguisher-good').checked ? 'Good' : 'Needs attention',
+        document.getElementById('tires-good').checked ? 'Good' : 'Needs attention',
+        document.getElementById('forks-good').checked ? 'Good' : 'Needs attention',
+        
+        // Operational checks
+        document.getElementById('steering-good').checked ? 'Good' : 'Needs attention',
+        document.getElementById('foot-brakes-good').checked ? 'Good' : 'Needs attention',
+        document.getElementById('emergency-brakes-good').checked ? 'Good' : 'Needs attention',
+        document.getElementById('hoisting-good').checked ? 'Good' : 'Needs attention',
+        document.getElementById('no-leaks').checked ? 'No leaks' : 'Leaks detected',
+        document.getElementById('h2o-checked').checked ? `Checked on ${document.getElementById('h2o-day').value}` : 'Not checked',        
+        // Overall status
+        document.querySelector('input[name="status"]:checked')?.value === 'pass' ? 'Pass' : 'Fail',
+        
+        // Notes (replace commas with semicolons to prevent CSV issues)
+        document.getElementById('notes').value.replace(/,/g, ';')
+    ];
+
+    // Create CSV headers
+    const headers = [
+        'Date', 'Time', 'Forklift Type', 'Forklift ID', 'Shift', 'Initials', 'Hours/Meter',
+        'Fuel Level', 'Battery Level', 'Horn', 'Front Lights', 'Backup Lights', 'Backup Alarm',
+        'Seatbelt', 'Fire Extinguisher', 'Tires', 'Forks', 'Steering', 'Foot Brakes',
+        'Emergency Brakes', 'Hoisting Mechanism', 'Fluid Leaks', 'H2O Check','Overall Status', 'Notes'
+    ];
+
+    // Create CSV content (no quotation marks)
+    const csvContent = [
+        headers.join(','),
+        values.join(',')
+    ].join('\n');
+    
+    // Create and trigger download
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `Forklift_Inspection_${document.getElementById('forklift-id').value}_${now.toISOString().slice(0,10)}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+        // PDF Generation function
+       function generatePDF() {
+    // Check if form has been submitted
+    if (document.getElementById('summary-section').style.display !== 'block') {
+        alert('Please submit the inspection first to generate a PDF report');
+        return;
+    }
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+    });
+
+    // Add title and company info
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Forklift Operator Daily Pre-operation Checklist', 105, 15, { align: 'center' });
+    doc.setFontSize(12);
+    doc.text('Location: STONESTREET', 105, 22, { align: 'center' });
+
+    // Add inspection details header
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Inspection Details', 20, 35);
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+
+    // Add basic info
+    let yPosition = 45;
+    doc.text(`Forklift ID: ${document.getElementById('forklift-id').value}`, 20, yPosition);
+    doc.text(`Type: ${document.getElementById('forklift-type').value === 'electric' ? 'Electric' : 'Internal Combustion'}`, 100, yPosition);
+    yPosition += 7;
+    doc.text(`Shift: ${document.getElementById('shift').value}`, 20, yPosition);
+    doc.text(`Initials: ${document.getElementById('operator-initials').value}`, 100, yPosition);
+    yPosition += 7;
+    doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, yPosition);
+    doc.text(`Time: ${new Date().toLocaleTimeString()}`, 100, yPosition);
+    yPosition += 7;
+    doc.text(`Hours/Meter: ${document.getElementById('hours-meter').value}`, 20, yPosition);
+    if (document.getElementById('forklift-type').value === 'electric') {
+        doc.text(`Battery Level: ${document.getElementById('battery-level').value}%`, 100, yPosition);
+    } else {
+        doc.text(`Fuel Level: ${document.getElementById('fuel-level').value}`, 100, yPosition);
+    }
+    yPosition += 12;
+
+    // Add safety devices section
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Safety Devices', 20, yPosition);
+    yPosition += 7;
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+
+    // Helper function to add inspection items
+    const addPdfInspectionItem = (label, goodId, badId, y) => {
+        const isGood = document.getElementById(goodId).checked;
+        doc.setFillColor(isGood ? '#27ae60' : '#e74c3c');
+        doc.circle(20, y - 2, 2, 'F');
+        doc.text(`${label}: ${isGood ? 'Good' : 'Needs attention'}`, 25, y);
+        return y + 5;
+    };
+
+    // Add safety devices
+    yPosition = addPdfInspectionItem('Horn', 'horn-working', 'horn-not-working', yPosition);
+    yPosition = addPdfInspectionItem('Front Lights', 'front-lights-working', 'front-lights-not-working', yPosition);
+    yPosition = addPdfInspectionItem('Backup Lights', 'back-lights-working', 'back-lights-not-working', yPosition);
+    yPosition = addPdfInspectionItem('Backup Alarm', 'backup-alarm-working', 'backup-alarm-not-working', yPosition);
+    yPosition = addPdfInspectionItem('Seatbelt', 'seatbelt-good', 'seatbelt-bad', yPosition);
+    yPosition = addPdfInspectionItem('Fire Extinguisher', 'fire-extinguisher-good', 'fire-extinguisher-bad', yPosition);
+    yPosition = addPdfInspectionItem('Tires', 'tires-good', 'tires-bad', yPosition);
+    yPosition = addPdfInspectionItem('Forks', 'forks-good', 'forks-bad', yPosition);
+    yPosition += 5;
+
+    // Add operational checks section
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Operational Checks', 20, yPosition);
+    yPosition += 7;
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+
+    // Add operational checks
+    yPosition = addPdfInspectionItem('Steering', 'steering-good', 'steering-bad', yPosition);
+    yPosition = addPdfInspectionItem('Foot Brakes', 'foot-brakes-good', 'foot-brakes-bad', yPosition);
+    yPosition = addPdfInspectionItem('Emergency Brakes', 'emergency-brakes-good', 'emergency-brakes-bad', yPosition);
+    yPosition = addPdfInspectionItem('Hoisting Mechanism', 'hoisting-good', 'hoisting-bad', yPosition);
+    yPosition = addPdfInspectionItem('Fluid Leaks', 'no-leaks', 'leaks-present', yPosition);
+    yPosition += 5;
+
+    // Add notes
+    const notes = document.getElementById('notes').value;
+    if (notes) {
+        doc.setFontSize(12);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Additional Notes:', 20, yPosition);
+        yPosition += 5;
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        const splitNotes = doc.splitTextToSize(notes, 170);
+        doc.text(splitNotes, 20, yPosition);
+        yPosition += splitNotes.length * 5;
+    }
+
+    if (document.getElementById('h2o-checked').checked) {
+    doc.text(`H2O Checked on ${document.getElementById('h2o-day').value}`, 20, yPosition);
+    yPosition += 5;
+}
+    // Add overall status
+    const status = document.querySelector('input[name="status"]:checked')?.value;
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(status === 'pass' ? '#27ae60' : '#e74c3c');
+    doc.text(`Overall Status: ${status === 'pass' ? 'PASS - Safe to operate' : 'FAIL - Do not operate'}`, 
+             105, yPosition + 10, { align: 'center' });
+
+    // Add footer
+    doc.setFontSize(8);
+    doc.setTextColor(100);
+    doc.text('Forklift Operators are required to complete this form daily.', 105, 287, { align: 'center' });
+    doc.text(`Generated on ${new Date().toLocaleString()}`, 105, 292, { align: 'center' });
+
+    // Save the PDF
+    doc.save(`Forklift_Inspection_${document.getElementById('forklift-id').value}_${new Date().toISOString().slice(0,10)}.pdf`);
+}
+
+        // Initialize the form
+        window.onload = function() {
+            toggleFuelSection();
+        };
+    </script>
+</body>
+</html>
